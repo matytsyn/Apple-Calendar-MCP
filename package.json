@@ -1,0 +1,36 @@
+{
+  "name": "apple-calendar-mcp-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first Apple Calendar MCP server, Swift EventKit helper, setup app, and release tooling.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "npm run build && node --enable-source-maps packages/mcp-server/dist/index.js",
+    "helper:build": "swift build --package-path apps/macos-helper",
+    "helper:bundle": "bash scripts/build-helper-app.sh",
+    "helper:setup": "bash scripts/open-setup-app.sh",
+    "helper:permission-request": "bash scripts/request-helper-permission.sh",
+    "helper:permission-status": "npm run build && npm run helper:bundle && node scripts/query-helper-bridge.mjs permission_status",
+    "client-configs:generate": "node scripts/generate-client-configs.mjs generate",
+    "client-configs:validate": "node scripts/generate-client-configs.mjs validate",
+    "client-configs:diagnose": "node scripts/generate-client-configs.mjs diagnose",
+    "start:mcp": "node packages/mcp-server/dist/index.js",
+    "start": "npm run build && node packages/mcp-server/dist/index.js",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "typecheck": "tsc -b",
+    "release:verify": "bash scripts/verify-release.sh",
+    "release:package": "bash scripts/package-release.sh"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "typescript": "5.4.5"
+  }
+}

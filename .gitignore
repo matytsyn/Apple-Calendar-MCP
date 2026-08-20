@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.build/
+.generated/
+
+# Local app state belongs under ~/Library/Application Support/AppleCalendarMCP.
+state.sqlite
+config.json
+
+# macOS and editor noise.
+.DS_Store
+.idea/
+.vscode/

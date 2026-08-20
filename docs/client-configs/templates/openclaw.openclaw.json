@@ -1,0 +1,19 @@
+{
+  "mcp": {
+    "servers": {
+      "apple-calendar": {
+        "type": "stdio",
+        "command": "<NODE_EXECUTABLE>",
+        "args": [
+          "<REPO_ROOT>/packages/mcp-server/dist/index.js"
+        ],
+        "env": {
+          "APPLE_CALENDAR_MCP_HELPER": "<REPO_ROOT>/apps/macos-helper/.build/debug/AppleCalendarMCPHelper.app/Contents/MacOS/apple-calendar-mcp-helper",
+          "APPLE_CALENDAR_MCP_HELPER_LAUNCH_MODE": "app",
+          "APPLE_CALENDAR_MCP_DATABASE_PATH": "<HOME>/Library/Application Support/AppleCalendarMCP/state.sqlite",
+          "APPLE_CALENDAR_MCP_CONFIG_PATH": "<HOME>/Library/Application Support/AppleCalendarMCP/config.json"
+        }
+      }
+    }
+  }
+}

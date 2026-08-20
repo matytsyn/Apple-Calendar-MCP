@@ -1,0 +1,29 @@
+{
+  "name": "apple-calendar-mcp",
+  "version": "0.1.0",
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "apple-calendar-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@apple-calendar-mcp/calendar-service": "0.1.0",
+    "@apple-calendar-mcp/shared": "0.1.0",
+    "@modelcontextprotocol/sdk": "1.29.0"
+  }
+}
