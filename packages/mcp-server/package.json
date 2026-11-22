@@ -24,6 +24,6 @@
   "dependencies": {
     "@apple-calendar-mcp/calendar-service": "0.1.0",
     "@apple-calendar-mcp/shared": "0.1.0",
-    "@modelcontextprotocol/sdk": "1.29.0"
+    "@modelcontextprotocol/sdk": "1.32.2"
   }
 }

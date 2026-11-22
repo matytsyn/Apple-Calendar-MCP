@@ -30,6 +30,7 @@
     "node": ">=22.5"
   },
   "devDependencies": {
+    "@hono/node-server": "2.1.11",
     "@types/node": "20.14.10",
     "typescript": "5.4.5"
   },
