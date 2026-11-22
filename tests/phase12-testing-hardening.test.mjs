@@ -191,7 +191,7 @@ test("Phase 12 duplicate detection blocks writes before idempotency, rollback, a
     });
 
     assert.equal(response.success, false);
-    assert.equal(response.error.code, "CONFLICT_DETECTED");
+    assert.equal(response.error.code, "POSSIBLE_DUPLICATE_EVENT");
     assert.equal(bridge.calls.some((call) => call.method === "createEvent"), false);
     assert.equal(sqlScalar(path, "SELECT COUNT(*) FROM idempotency_keys"), 0);
     assert.equal(sqlScalar(path, "SELECT COUNT(*) FROM rollback_operations"), 0);
@@ -473,7 +473,17 @@ test("Phase 12 stdout stays reserved for MCP protocol during startup", async () 
   let stderr = "";
   child.stdout.on("data", (chunk) => { stdout += chunk.toString("utf8"); });
   child.stderr.on("data", (chunk) => { stderr += chunk.toString("utf8"); });
-  await new Promise((resolvePromise) => setTimeout(resolvePromise, 250));
+  await new Promise((resolvePromise, rejectPromise) => {
+    const timeout = setTimeout(() => rejectPromise(new Error(`Timed out waiting for startup log. stderr: ${stderr}`)), 2000);
+    const onData = () => {
+      if (stderr.includes("Apple Calendar MCP server started")) {
+        clearTimeout(timeout);
+        child.stderr.off("data", onData);
+        resolvePromise();
+      }
+    };
+    child.stderr.on("data", onData);
+  });
   child.kill("SIGTERM");
   await once(child, "exit");
 

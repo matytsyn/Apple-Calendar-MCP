@@ -232,6 +232,32 @@ test("calendar_create_event requires confirmation before writing and replays ide
   }
 });
 
+test("calendar_create_event allows overlapping events with different titles in the same calendar", async () => {
+  const { store } = await createStoreWithPath();
+  const bridge = createBridge([sampleEvent()]);
+  const service = new CalendarWriteService(bridge, store);
+  const input = {
+    calendar_id: calendarId,
+    title: "Planning",
+    start: "2026-06-06T10:30:00+08:00",
+    end: "2026-06-06T11:30:00+08:00",
+    timezone: "Asia/Makassar",
+    is_all_day: false
+  };
+
+  try {
+    const preview = assertSuccess(await service.createEvent(input));
+    assert.equal(preview.data.requires_confirmation, true);
+    assert.equal(bridge.calls.some((call) => call.method === "createEvent"), false);
+
+    const written = assertSuccess(await service.createEvent(confirmedInput(input, preview)));
+    assert.equal(written.data.event.title, "Planning");
+    assert.equal(bridge.events.length, 2);
+  } finally {
+    store.close();
+  }
+});
+
 test("permission mode read_only blocks write tools before EventKit writes", async () => {
   await withPermissionMode("read_only", async () => {
     const store = await createStore();
@@ -455,7 +481,7 @@ test("calendar_update_event fails verification when EventKit state does not matc
   }
 });
 
-test("calendar_create_event audits blocked duplicate writes before confirmation", async () => {
+test("calendar_create_event allows overlapping non-duplicate writes and audits confirmation", async () => {
   const { store, path } = await createStoreWithPath();
   const bridge = createBridge([
     sampleEvent({
@@ -478,13 +504,41 @@ test("calendar_create_event audits blocked duplicate writes before confirmation"
       idempotency_key: "duplicate-design-review"
     });
 
-    assert.equal(response.success, false);
-    assert.equal(response.error.code, "CONFLICT_DETECTED");
+    assert.equal(response.success, true);
+    assert.equal(response.data.requires_confirmation, true);
     assert.equal(bridge.calls.some((call) => call.method === "createEvent"), false);
 
     const audit = firstRow(path, "SELECT result, error_code FROM audit_log ORDER BY timestamp DESC LIMIT 1");
-    assert.equal(audit.result, "blocked");
-    assert.equal(audit.error_code, "CONFLICT_DETECTED");
+    assert.equal(audit.result, "requires_confirmation");
+    assert.equal(audit.error_code, null);
+  } finally {
+    store.close();
+  }
+});
+
+test("calendar_create_event does not treat unrelated Cyrillic titles as duplicates", async () => {
+  const { store } = await createStoreWithPath();
+  const bridge = createBridge([
+    sampleEvent({
+      title: "Отбор Ломаносов по журналистке",
+      start: "2026-06-06T10:00:00+08:00",
+      end: "2026-06-06T11:00:00+08:00"
+    })
+  ]);
+  const service = new CalendarWriteService(bridge, store);
+
+  try {
+    const response = await service.createEvent({
+      calendar_id: calendarId,
+      title: "тест",
+      start: "2026-06-06T10:30:00+08:00",
+      end: "2026-06-06T11:30:00+08:00",
+      timezone: "Asia/Makassar",
+      is_all_day: false
+    });
+
+    assert.equal(response.success, true);
+    assert.equal(response.data.requires_confirmation, true);
   } finally {
     store.close();
   }

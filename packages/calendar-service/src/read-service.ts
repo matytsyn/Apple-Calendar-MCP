@@ -944,7 +944,7 @@ function titleSimilarity(left: string, right: string): number {
 }
 
 function normalizeComparable(value: string): string {
-  return value.toLocaleLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  return value.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 }
 
 function toConflictWarning(event: NormalizedEvent): ConflictWarning {

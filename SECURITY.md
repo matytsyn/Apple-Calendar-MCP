@@ -103,6 +103,12 @@ Potential threats:
 - IPC abuse
 - unsafe local integrations
 
+The helper executable, database path, setup configuration path, and helper
+launch mode may be selected through environment variables. A local process
+that can modify the MCP client's environment can therefore redirect the server
+to another helper or database. Treat the MCP client environment and its local
+configuration as trusted.
+
 ---
 
 # Permission Architecture
@@ -260,6 +266,11 @@ Avoid storing:
 - full notes
 - attendee emails
 - unnecessary private content
+
+Rollback records are an explicit exception. They retain the full before and
+after event state required to restore an event exactly, including notes,
+location, URL, and timezone. These records remain in the local SQLite state
+database and are excluded from compact MCP responses.
 
 ---
 

@@ -367,7 +367,8 @@ export class CalendarWriteService {
       input.end,
       input.title,
       input.location ?? null,
-      null
+      null,
+      true
     );
     if (safetyFailure) {
       return safetyFailure;
@@ -620,7 +621,8 @@ export class CalendarWriteService {
     end: string,
     title: string,
     location: string | null,
-    excludeEventId: string | null
+    excludeEventId: string | null,
+    allowOverlaps = false
   ): Promise<SemanticFailure | null> {
     try {
       const events = parseBridgeEventList(
@@ -634,7 +636,7 @@ export class CalendarWriteService {
         .filter((event) => event.event_id !== excludeEventId);
 
       const conflicts = events.filter((event) => overlaps(start, end, event.start, event.end));
-      if (conflicts.length > 0) {
+      if (!allowOverlaps && conflicts.length > 0) {
         return failure(
           "CONFLICT_DETECTED",
           "The requested write conflicts with existing events.",
@@ -1242,7 +1244,7 @@ function titleSimilarity(left: string, right: string): number {
 }
 
 function normalizeComparable(value: string): string {
-  return value.toLocaleLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  return value.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 }
 
 function calendarIdFromInput(input: unknown): string | null {

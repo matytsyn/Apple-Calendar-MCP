@@ -22,7 +22,7 @@ The product must feel trustworthy before it feels powerful. Users should underst
 - Find free time across selected calendars.
 - Preview, create, update, reschedule, and delete events.
 - Require explicit confirmation or preview-confirm flow for writes.
-- Detect ambiguous requests, duplicates, and conflicts before writing.
+- Detect ambiguous requests, duplicates, and conflicts before writing. Conflict results are surfaced to the caller as safety information, while ordinary overlapping events remain valid because Apple Calendar supports parallel events. Duplicate and idempotency safeguards still prevent accidental repeated writes.
 - Maintain rollback records, audit records, idempotency records, snapshots, and change feeds.
 - Generate MCP client configs for Claude, Codex, Cursor, OpenClaw, and generic clients.
 - Provide a native macOS setup app for permission, allowlist, mode selection, config generation, and verification.

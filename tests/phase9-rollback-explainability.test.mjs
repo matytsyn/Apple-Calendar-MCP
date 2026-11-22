@@ -14,8 +14,8 @@ import { AppleCalendarSqliteStore } from "../packages/sqlite-store/dist/index.js
 
 const nativeCalendarId = "native-work-calendar";
 const calendarId = calendarIdFromNative(nativeCalendarId);
-const now = "2026-06-06T00:00:00Z";
-const later = "2026-07-06T00:00:00Z";
+const now = "2027-06-06T00:00:00Z";
+const later = "2027-07-06T00:00:00Z";
 const fingerprint = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const originalConfigPath = process.env.APPLE_CALENDAR_MCP_CONFIG_PATH;
 const isolatedMissingConfigPath = join(tmpdir(), "apple-calendar-mcp-missing-phase9-config.json");
@@ -154,8 +154,8 @@ function eventState(overrides = {}) {
     calendar_id: calendarId,
     native_calendar_id: nativeCalendarId,
     title: "Design Review",
-    start: "2026-06-06T10:00:00+08:00",
-    end: "2026-06-06T11:00:00+08:00",
+    start: "2027-06-06T10:00:00+08:00",
+    end: "2027-06-06T11:00:00+08:00",
     timezone: "Asia/Makassar",
     is_all_day: false,
     location: "Studio",
@@ -348,7 +348,7 @@ test("calendar_rollback_change treats an already absent created event as success
 test("calendar_rollback_change restores previous state only after permission, allowlist, and conflict checks", async () => {
   const { store, path } = await createStoreWithPath();
   const before = eventState();
-  const after = eventState({ title: "Design Critique", start: "2026-06-06T12:00:00+08:00", end: "2026-06-06T13:00:00+08:00" });
+  const after = eventState({ title: "Design Critique", start: "2027-06-06T12:00:00+08:00", end: "2027-06-06T13:00:00+08:00" });
   const rollback = seedRollback(store, { before_state: before, after_state: after });
   const bridge = createBridge([bridgeEvent(after)]);
   const service = new CalendarRollbackService(bridge, store);
